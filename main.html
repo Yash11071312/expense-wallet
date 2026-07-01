@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wallet</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style1.css">
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=account_balance,arrow_circle_right" />
+</head>
+<body>
+
+    <!-- Floating glow orbs -->
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+
+    <nav class="navbar">
+
+    <div class="logo">
+       <span class="material-symbols-outlined">
+account_balance
+</span> <div class="logom_main">
+
+   <span>
+       Your Wallet
+</span> 
+    
+</div>
+    </div>
+
+    <ul class="nav-links">
+        <li><a href="#" id="home">Home <div class="line1 hidden"></div></a></li>
+        <li><a href="#" id="features">Features <div class="line2 hidden"></div></a></li>
+        <li><a href="#" id="about">About <div class="line3 hidden"></div></a></li>
+    </ul>
+
+    <button class="nav-btn btn-glow1 " id="getsrt1">
+        Get Started
+    </button>
+
+</nav>
+<section class="page1 ">
+
+    <section class="hero ">
+        <p class="hero-subtitle">Smart · Secure · Simple</p>
+        <h2 class="hero-title">Your Money,<br><span>Reimagined.</span></h2>
+        <p class="hero-desc">Manage, track, and grow your finances with a wallet built for the modern world.</p>
+        <button class="btn-glow" id="getsrt" >Get Started <span class="material-symbols-outlined padding">
+arrow_circle_right
+</span></button>
+    </section>
+    
+    <section class="cards">
+        <div class="card">
+            <span class="card-icon">.💵</span>
+            <div class="card-title">KEEP ALL RECORDS</div>
+            <div class="card-text">Get All Updates of Ur money</div>
+        </div>
+        <div class="card">
+            <span class="card-icon">🔒</span>
+            <div class="card-title">Secure</div>
+            <div class="card-text">Only you know About ur money</div>
+        </div>
+        <div class="card">
+            <span class="card-icon">📊</span>
+            <div class="card-title">Analytics</div>
+            <div class="card-text">Track spending with live insights</div>
+        </div>
+    </section>
+</section>
+
+<section class="page2 hidden">
+
+    <h1 class="heading1">
+        Expense Dashboard
+    </h1>
+
+    <div class="balance-card">
+        <h2>Total Balance</h2>
+        <h1 id="balance">₹0</h1>
+    </div>
+
+    <div class="dashboard-buttons">
+        <button id="incomeBtn">
+            Add Income
+        </button>
+
+        <button id="expenseBtn">
+            Add Expense
+        </button>
+    </div>
+
+    <div class="transaction-list">
+        <h2>Recent Transactions</h2>
+
+        <div id="transactions">
+            No transactions yet.
+        </div>
+    </div>
+
+</section>
+    <section class="about">this is about page</section>
+    <section class="features">this is features page</section>
+    <script src="script.js"></script>
+</body>
+</html>

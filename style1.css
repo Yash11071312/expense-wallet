@@ -1,0 +1,54 @@
+.page2{
+    min-height:100vh;
+    padding-top:140px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:30px;
+}
+
+.balance-card{
+    width:400px;
+    padding:40px;
+    border-radius:20px;
+    background:rgba(255,255,255,.05);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    color:white;
+    box-shadow:0 0 30px rgba(201,78,78,.3);
+}
+
+.balance-card h1{
+    color:#ff6b5a;
+    font-size:3rem;
+    margin-top:10px;
+}
+
+.dashboard-buttons{
+    display:flex;
+    gap:20px;
+}
+
+.dashboard-buttons button{
+    padding:15px 30px;
+    border:none;
+    border-radius:50px;
+    background:#c94e4e;
+    color:white;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.dashboard-buttons button:hover{
+    transform:translateY(-5px);
+    box-shadow:0 0 20px #c94e4e;
+}
+
+.transaction-list{
+    width:700px;
+    padding:30px;
+    border-radius:20px;
+    background:rgba(255,255,255,.04);
+    color:white;
+}
