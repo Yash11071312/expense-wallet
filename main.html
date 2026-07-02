@@ -70,6 +70,22 @@ arrow_circle_right
     </section>
 </section>
 
+<div class="AddIncomeBox none">
+        <form >
+        
+        <h1>Enter the amount </h1>
+        <input type="number" class="amount" placeholder="Enter the amount" name="amount" id="AmountIp">
+        <div class="Form-buttons">
+            <button type="submit" class="Form-button" onclick="Addbtn(event)">
+Add 
+            </button>
+            <button type="button" class="Form-button" onclick="CancelBtn()">
+Cancel
+            </button>
+        </div>
+        </form>
+</div>
+
 <section class="page2 hidden">
 
     <h1 class="heading1">
@@ -82,11 +98,10 @@ arrow_circle_right
     </div>
 
     <div class="dashboard-buttons">
-        <button id="incomeBtn">
+        <button id="incomeBtn" onclick="AddIncome()">
             Add Income
         </button>
-
-        <button id="expenseBtn">
+        <button id="expenseBtn" onclick="Expensededuct()">
             Add Expense
         </button>
     </div>
@@ -95,7 +110,11 @@ arrow_circle_right
         <h2>Recent Transactions</h2>
 
         <div id="transactions">
-            No transactions yet.
+          <p>
+
+              No transactions yet.
+
+          </p>
         </div>
     </div>
 

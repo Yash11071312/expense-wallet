@@ -52,3 +52,74 @@
     background:rgba(255,255,255,.04);
     color:white;
 }
+.AddIncomeBox{
+    background: #e80e0e;
+    /* color: aliceblue; */
+    display: inline;
+    top: 35%;
+    left: 30%;
+    z-index: 9999;
+    position:absolute;
+    height: 400px;
+    /* width: 200px; */
+    width:600px;
+    padding:40px;
+    border-radius:20px;
+    background:rgba(255,255,255,.05);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    color:white;
+    box-shadow:0 0 30px rgba(201,78,78,.3);
+}
+.AddIncomeBox h1{
+       color:#d19a94;
+    font-size:3rem;
+    margin-top:10px;
+    text-align: center;
+}
+.AddIncomeBox input{
+        /* display:flex; */
+        cursor: pointer;
+margin-top: 20px;
+    text-align: center;
+    align-items: center;
+    padding: 14px 40px;
+    background: transparent;
+    color: #fff;
+    border: 2px solid #c94e4e;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    
+    overflow: hidden;
+    /* animation: fadeInLeft 1s ease 0.9s both; */
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(201,78,78,0.4);
+}
+.amount::-webkit-inner-spin-button,
+.amount::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.amount-input {
+    -moz-appearance: textfield;
+}
+.Form-button{
+    margin-top: 20px;
+        padding:15px 30px;
+    border:none;
+    border-radius:50px;
+    background:#c94e4e;
+    color:white;
+    cursor:pointer;
+    transition:.3s;
+}
+.none{
+    display:none;
+}
