@@ -1,4 +1,9 @@
+let totalBalance = Number(localStorage.getItem("balance")) || 0;
+
+let balance = document.querySelector("#balance");
+balance.innerText = `₹${totalBalance}`;
 let landing = document.querySelector(".page1");
+
 let main = document.querySelector(".page2");
 let about = document.querySelector(".about");
 let features = document.querySelector(".features");
@@ -8,12 +13,23 @@ let line3 = document.querySelector(".line3");
 let home = document.querySelector("#home");
 let AddIncomeBox = document.querySelector(".AddIncomeBox")
 let amountInput = document.querySelector("#AmountIp");
-let balance = document.querySelector("#balance");
 let transactions =document.querySelector("#transactions")
-let totalBalance = 0;
+let allTransactions =
+    JSON.parse(localStorage.getItem("transactions")) || [];
 let tiger =0;
 let transaction= "None"
 let transactionfirst= 0
+transactions.innerHTML = "";
+
+allTransactions.forEach((item) => {
+    if (item.type === "income") {
+        transactions.innerHTML +=
+            `<br> - ₹${item.amount} Credited`;
+    } else {
+        transactions.innerHTML +=
+            `<br> - ₹${item.amount} Debited`;
+    }
+});
 function hideAllPages() {
     landing.classList.add("hidden");
     main.classList.add("hidden");
@@ -26,7 +42,7 @@ AddClasslist(home);
 AddClasslistHidden(line3);
 
 AddClasslistHidden(line2);
-RemoveClasslistHidden(line1)
+RemoeClasslistHidden(line1)
 
 }
 function landingPage() {
@@ -87,6 +103,9 @@ function AddIncome() {
 
   AddIncomeBox.classList.remove("none")
 tiger=1;
+
+    amountInput.value = "";
+ amountInput.focus();
 }
 function Addbtn(e){
      e.preventDefault();
@@ -99,8 +118,18 @@ if (tiger==1){
     totalBalance += amount;
 
     balance.innerText = `₹${totalBalance}`;
-    transactionsftn(amount)
-    transaction="income"
+    localStorage.setItem("balance", totalBalance);
+ allTransactions.push({
+    type: "income",
+    amount: amount
+});
+
+localStorage.setItem(
+    "transactions",
+    JSON.stringify(allTransactions)
+);
+
+transactionsftn("income", amount);
     amountInput.value = "";
     
     AddIncomeBox.classList.add("none");
@@ -108,11 +137,20 @@ if (tiger==1){
   else{
     if (amount<=totalBalance) {
     totalBalance -= amount;
-    transactionsftn(amount)
-    transaction="expense"
+allTransactions.push({
+    type: "expense",
+    amount: amount
+});
+
+localStorage.setItem(
+    "transactions",
+    JSON.stringify(allTransactions)
+);
+
+transactionsftn("expense", amount);
   balance.innerText = `₹${totalBalance}`;
-  
   amountInput.value = "";
+  localStorage.setItem("balance", totalBalance);
   
   AddIncomeBox.classList.add("none");
 }
@@ -128,34 +166,20 @@ function CancelBtn(){
 function Expensededuct() {
   AddIncomeBox.classList.remove("none")
   tiger=0;
+
+    amountInput.value = "";
+   amountInput.focus();
 }
 
-function transactionsftn(amt) {
-  if (transactionfirst==0) {
-    
-    if (transaction=="income") {
-      
-      
-      transactions.innerHTML=`<br>₹${amt} Credited`
-      transaction="income"
-    }
-    else{
-    
-      transactions.innerHTML=`<br>₹${amt} Debited`
-      transaction="expense"
-    }
-transactionfirst=1;
-  }
-  else{
+function transactionsftn(type, amt) {
 
-  
-    if (transaction=="income") {
-      
-      transactions.innerHTML+=`<br>₹${amt} Credited`
+    if (type === "income") {
+        transactions.innerHTML +=
+            `<br> + ₹${amt} Credited`;
     }
-    else{
-      transactions.innerHTML+=`<br>₹${amt} Debited`
-      
+    else {
+        transactions.innerHTML +=
+            `<br> - ₹${amt} Debited`;
     }
-  }
-  }
+
+}
