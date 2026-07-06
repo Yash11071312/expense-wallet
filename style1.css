@@ -123,3 +123,13 @@ margin-top: 20px;
 .none{
     display:none;
 }
+.transaction{
+    display: flex;
+    justify-content:  space-between;
+align-items :center;
+padding:20px;
+margin-bottom:20px;
+border-radius:20px
+/* glass effect/background
+hover effect */
+}

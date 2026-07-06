@@ -24,10 +24,24 @@ transactions.innerHTML = "";
 allTransactions.forEach((item) => {
     if (item.type === "income") {
         transactions.innerHTML +=
-            `<br> - ₹${item.amount} Credited`;
+            `<div class="transaction">
+    <div>
+        <h4>💰 Income</h4>
+        <small>${item.date}</small>
+    </div>
+
+    <span>+ ${item.amount}</span>
+</div>`;
     } else {
         transactions.innerHTML +=
-            `<br> - ₹${item.amount} Debited`;
+            `<div class="transaction">
+    <div>
+        <h4>🛒 Expense</h4>
+        <small>${item.date}</small>
+    </div>
+
+    <span>- ${item.amount}</span>
+</div>`;
     }
 });
 function hideAllPages() {
@@ -119,10 +133,13 @@ if (tiger==1){
 
     balance.innerText = `₹${totalBalance}`;
     localStorage.setItem("balance", totalBalance);
- allTransactions.push({
+ allTransactions.push(
+   {
     type: "income",
-    amount: amount
-});
+    amount: amount,
+    date: new Date().toLocaleDateString()
+}
+);
 
 localStorage.setItem(
     "transactions",
@@ -139,7 +156,8 @@ transactionsftn("income", amount);
     totalBalance -= amount;
 allTransactions.push({
     type: "expense",
-    amount: amount
+    amount: amount,
+    date: new Date().toLocaleDateString()
 });
 
 localStorage.setItem(
