@@ -23,25 +23,9 @@ transactions.innerHTML = "";
 
 allTransactions.forEach((item) => {
     if (item.type === "income") {
-        transactions.innerHTML +=
-            `<div class="transaction">
-    <div>
-        <h4>💰 Income</h4>
-        <small>${item.date}</small>
-    </div>
-
-    <span>+ ${item.amount}</span>
-</div>`;
+        transactions.innerHTML += createTransactionCard(item);
     } else {
-        transactions.innerHTML +=
-            `<div class="transaction">
-    <div>
-        <h4>🛒 Expense</h4>
-        <small>${item.date}</small>
-    </div>
-
-    <span>- ${item.amount}</span>
-</div>`;
+        transactions.innerHTML += createTransactionCard(item)
     }
 });
 function hideAllPages() {
@@ -190,14 +174,62 @@ function Expensededuct() {
 }
 
 function transactionsftn(type, amt) {
-
+    let today = new Date().toLocaleDateString();
     if (type === "income") {
-        transactions.innerHTML +=
-            `<br> + ₹${amt} Credited`;
+         transactions.innerHTML += createTransactionCard({
+        type: type,
+        amount: amt,
+        date: today
+    });
+
     }
     else {
-        transactions.innerHTML +=
-            `<br> - ₹${amt} Debited`;
+        transactions.innerHTML += createTransactionCard({
+        type: type,
+        amount: amt,
+        date: today
+    });
     }
 
+}
+function ResetWallet() {
+ 
+ if(confirm("Are you sure you want to reset your wallet?")) {
+    localStorage.removeItem("balance");
+    localStorage.removeItem("transactions");
+    totalBalance = 0;
+allTransactions = [];
+balance.innerText = "₹0";
+transactions.innerHTML =
+`
+<p>No transactions yet.</p>
+`;
+return;
+  } 
+  return;
+}
+function createTransactionCard(item) {
+
+    if(item.type === "income"){
+
+        return `
+        <div class="transaction">
+            <div>
+                <h4>💰 Income</h4>
+                <small>${item.date}</small>
+            </div>
+
+            <span>+ ₹${item.amount}</span>
+        </div>`;
+    }
+
+    return `
+    <div class="transaction">
+        <div>
+            <h4>🛒 Expense</h4>
+            <small>${item.date}</small>
+        </div>
+
+        <span>- ₹${item.amount}</span>
+    </div>`;
 }
