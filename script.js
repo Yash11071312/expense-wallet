@@ -3,7 +3,7 @@ let totalBalance = Number(localStorage.getItem("balance")) || 0;
 let balance = document.querySelector("#balance");
 balance.innerText = `₹${totalBalance}`;
 let landing = document.querySelector(".page1");
-
+let reasonInput = document.querySelector("#reason");
 let main = document.querySelector(".page2");
 let about = document.querySelector(".about");
 let features = document.querySelector(".features");
@@ -22,11 +22,7 @@ let transactionfirst= 0
 transactions.innerHTML = "";
 
 allTransactions.forEach((item) => {
-    if (item.type === "income") {
-        transactions.innerHTML += createTransactionCard(item);
-    } else {
-        transactions.innerHTML += createTransactionCard(item)
-    }
+    transactions.innerHTML += createTransactionCard(item);
 });
 function hideAllPages() {
     landing.classList.add("hidden");
@@ -103,12 +99,18 @@ function AddIncome() {
 tiger=1;
 
     amountInput.value = "";
+    reasonInput.value = "";
  amountInput.focus();
 }
 function Addbtn(e){
      e.preventDefault();
 
     let amount = Number(amountInput.value);
+    if (amount <= 0 || isNaN(amount)) {
+    alert("Please enter a valid amount.");
+    return;
+}
+    let reason = reasonInput.value.trim();
 
   
 
@@ -117,30 +119,13 @@ if (tiger==1){
 
     balance.innerText = `₹${totalBalance}`;
     localStorage.setItem("balance", totalBalance);
- allTransactions.push(
-   {
+    if (reason === "") {
+    reason = "Income";
+}
+ allTransactions.push({
     type: "income",
     amount: amount,
-    date: new Date().toLocaleDateString()
-}
-);
-
-localStorage.setItem(
-    "transactions",
-    JSON.stringify(allTransactions)
-);
-
-transactionsftn("income", amount);
-    amountInput.value = "";
-    
-    AddIncomeBox.classList.add("none");
-  }
-  else{
-    if (amount<=totalBalance) {
-    totalBalance -= amount;
-allTransactions.push({
-    type: "expense",
-    amount: amount,
+    reason: reason,
     date: new Date().toLocaleDateString()
 });
 
@@ -149,9 +134,33 @@ localStorage.setItem(
     JSON.stringify(allTransactions)
 );
 
-transactionsftn("expense", amount);
+transactionsftn("income", amount,reason);
+    amountInput.value = "";
+     reasonInput.value = "";
+    AddIncomeBox.classList.add("none");
+  }
+  else{
+    if (amount<=totalBalance) {
+    totalBalance -= amount;
+    if (reason === "") {
+    reason = "Expense";
+}
+allTransactions.push({
+    type: "expense",
+    amount: amount,
+    reason: reason,
+    date: new Date().toLocaleDateString()
+});
+
+localStorage.setItem(
+    "transactions",
+    JSON.stringify(allTransactions)
+);
+
+transactionsftn("expense", amount,reason);
   balance.innerText = `₹${totalBalance}`;
   amountInput.value = "";
+   reasonInput.value = "";
   localStorage.setItem("balance", totalBalance);
   
   AddIncomeBox.classList.add("none");
@@ -161,24 +170,27 @@ else{
 }
 }}
 
-function CancelBtn(){
-  AddIncomeBox.classList.add("none")
-  
+function CancelBtn() {
+    AddIncomeBox.classList.add("none");
+    amountInput.value = "";
+    reasonInput.value = "";
 }
 function Expensededuct() {
   AddIncomeBox.classList.remove("none")
   tiger=0;
 
     amountInput.value = "";
+     reasonInput.value = "";
    amountInput.focus();
 }
 
-function transactionsftn(type, amt) {
+function transactionsftn(type, amt,reason) {
     let today = new Date().toLocaleDateString();
     if (type === "income") {
          transactions.innerHTML += createTransactionCard({
         type: type,
         amount: amt,
+          reason: reason,
         date: today
     });
 
@@ -186,7 +198,9 @@ function transactionsftn(type, amt) {
     else {
         transactions.innerHTML += createTransactionCard({
         type: type,
+    
         amount: amt,
+          reason: reason,
         date: today
     });
     }
@@ -215,7 +229,7 @@ function createTransactionCard(item) {
         return `
         <div class="transaction">
             <div>
-                <h4>💰 Income</h4>
+           <h4>💰 ${item.reason}</h4>
                 <small>${item.date}</small>
             </div>
 
@@ -226,7 +240,7 @@ function createTransactionCard(item) {
     return `
     <div class="transaction">
         <div>
-            <h4>🛒 Expense</h4>
+         <h4>🛒 ${item.reason}</h4>
             <small>${item.date}</small>
         </div>
 
