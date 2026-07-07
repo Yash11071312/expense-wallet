@@ -1,7 +1,15 @@
+// DECLARATIONS----------------------------------
 let totalBalance = Number(localStorage.getItem("balance")) || 0;
+let totalSpendings = Number(localStorage.getItem("totalSpending")) || 0;
+let totalIncomes = Number(localStorage.getItem("totalIncome")) || 0;
 
 let balance = document.querySelector("#balance");
+let totalIncome = document.querySelector("#totalIncome");
+let totalSpending = document.querySelector("#totalSpending");
+
 balance.innerText = `₹${totalBalance}`;
+totalIncome.innerText = `₹${totalIncomes}`;
+totalSpending.innerText = `₹${totalSpendings}`;
 let landing = document.querySelector(".page1");
 let reasonInput = document.querySelector("#reason");
 let main = document.querySelector(".page2");
@@ -19,50 +27,76 @@ let allTransactions =
 let tiger =0;
 let transaction= "None"
 let transactionfirst= 0
-transactions.innerHTML = "";
+// --------------------------------------------------------------------------
+if (allTransactions.length === 0) {
 
-allTransactions.forEach((item) => {
-    transactions.innerHTML += createTransactionCard(item);
-});
+    transactions.innerHTML = "<p>No transactions yet.</p>";
+
+}
+else {
+
+    transactions.innerHTML = "";
+
+    allTransactions.forEach((item) => {
+        transactions.innerHTML += createTransactionCard(item);
+    });
+
+}
+// HIDE PAGE FUNCTION
 function hideAllPages() {
     landing.classList.add("hidden");
     main.classList.add("hidden");
     about.classList.add("hidden");
     features.classList.add("hidden");
 }
+// NAVIGATE PAGES
 function HomePage() {
-        hideAllPages();
-AddClasslist(home);
-AddClasslistHidden(line3);
 
-AddClasslistHidden(line2);
-RemoeClasslistHidden(line1)
+    hideAllPages();
 
+    main.classList.remove("hidden");
+
+    RemoveClasslistClicked(document.querySelector("#features"));
+    RemoveClasslistClicked(document.querySelector("#about"));
+    AddClasslist(home);
+
+    AddClasslistHidden(line2);
+    AddClasslistHidden(line3);
+    RemoveClasslistHidden(line1);
 }
 function landingPage() {
     hideAllPages();
     landing.classList.remove("hidden");
 }
 function featuresPage() {
-hideAllPages();
-features.classList.remove("hidden")
-AddClasslist(features);
-AddClasslistHidden(line1);
 
-AddClasslistHidden(line3);
-RemoveClasslistHidden(line2)
+    hideAllPages();
 
-  
+    features.classList.remove("hidden");
+
+    RemoveClasslistClicked(home);
+    RemoveClasslistClicked(document.querySelector("#about"));
+    AddClasslist(document.querySelector("#features"));
+
+    AddClasslistHidden(line1);
+    AddClasslistHidden(line3);
+    RemoveClasslistHidden(line2);
 }
 function aboutPage() {
-AddClasslist(about);
-AddClasslistHidden(line1);
 
-AddClasslistHidden(line2);
-RemoveClasslistHidden(line3)
-RemoveClasslistClicked(home)
-RemoveClasslistClicked(features)
+    hideAllPages();
+
+    about.classList.remove("hidden");
+
+    RemoveClasslistClicked(home);
+    RemoveClasslistClicked(document.querySelector("#features"));
+    AddClasslist(document.querySelector("#about"));
+
+    AddClasslistHidden(line1);
+    AddClasslistHidden(line2);
+    RemoveClasslistHidden(line3);
 }
+
 function AddClasslist(name) {
   name.classList.add("clicked");
 }
@@ -75,6 +109,9 @@ function RemoveClasslistHidden(name) {
 function RemoveClasslistClicked(name) {
   name.classList.remove("clicked");
 }
+// ---------------------------------
+
+// BUTTONS---------------------
 document.getElementById("getsrt").addEventListener("click", (e) => {
   landing.classList.add("hidden");
   main.classList.remove("hidden");
@@ -93,6 +130,7 @@ document.querySelector("#features").addEventListener("click", (e) => {
 document.querySelector("#about").addEventListener("click", (e) => {
   aboutPage();
 });
+//  MAIN PAGE  -------------
 function AddIncome() {
 
   AddIncomeBox.classList.remove("none")
@@ -114,60 +152,78 @@ function Addbtn(e){
 
   
 
-if (tiger==1){
+if (tiger == 1) {
+
     totalBalance += amount;
+    totalIncomes += amount;
 
     balance.innerText = `₹${totalBalance}`;
+    totalIncome.innerText = `₹${totalIncomes}`;
+
     localStorage.setItem("balance", totalBalance);
+    localStorage.setItem("totalIncome", totalIncomes);
+
     if (reason === "") {
-    reason = "Income";
-}
- allTransactions.push({
-    type: "income",
-    amount: amount,
-    reason: reason,
-    date: new Date().toLocaleDateString()
-});
+        reason = "Income";
+    }
 
-localStorage.setItem(
-    "transactions",
-    JSON.stringify(allTransactions)
-);
+    allTransactions.push({
+        type: "income",
+        amount: amount,
+        reason: reason,
+        date: new Date().toLocaleDateString()
+    });
 
-transactionsftn("income", amount,reason);
+    localStorage.setItem(
+        "transactions",
+        JSON.stringify(allTransactions)
+    );
+
+    transactionsftn("income", amount, reason);
+
     amountInput.value = "";
-     reasonInput.value = "";
+    reasonInput.value = "";
     AddIncomeBox.classList.add("none");
-  }
-  else{
-    if (amount<=totalBalance) {
-    totalBalance -= amount;
-    if (reason === "") {
-    reason = "Expense";
 }
-allTransactions.push({
-    type: "expense",
-    amount: amount,
-    reason: reason,
-    date: new Date().toLocaleDateString()
-});
+else {
 
-localStorage.setItem(
-    "transactions",
-    JSON.stringify(allTransactions)
-);
+    if (amount <= totalBalance) {
 
-transactionsftn("expense", amount,reason);
-  balance.innerText = `₹${totalBalance}`;
-  amountInput.value = "";
-   reasonInput.value = "";
-  localStorage.setItem("balance", totalBalance);
-  
-  AddIncomeBox.classList.add("none");
-}
-else{
-  alert("expense is greater than ur wallet money")
-}
+        totalBalance -= amount;
+        totalSpendings += amount;
+
+        balance.innerText = `₹${totalBalance}`;
+        totalSpending.innerText = `₹${totalSpendings}`;
+
+        localStorage.setItem("balance", totalBalance);
+        localStorage.setItem("totalSpending", totalSpendings);
+
+        if (reason === "") {
+            reason = "Expense";
+        }
+
+        allTransactions.push({
+            type: "expense",
+            amount: amount,
+            reason: reason,
+            date: new Date().toLocaleDateString()
+        });
+
+        localStorage.setItem(
+            "transactions",
+            JSON.stringify(allTransactions)
+        );
+
+        transactionsftn("expense", amount, reason);
+
+        amountInput.value = "";
+        reasonInput.value = "";
+
+        AddIncomeBox.classList.add("none");
+    }
+    else {
+        alert("Expense is greater than your wallet balance.");
+    }
 }}
 
 function CancelBtn() {
@@ -207,20 +263,28 @@ function transactionsftn(type, amt,reason) {
 
 }
 function ResetWallet() {
- 
- if(confirm("Are you sure you want to reset your wallet?")) {
-    localStorage.removeItem("balance");
-    localStorage.removeItem("transactions");
-    totalBalance = 0;
-allTransactions = [];
-balance.innerText = "₹0";
-transactions.innerHTML =
-`
-<p>No transactions yet.</p>
-`;
-return;
-  } 
-  return;
+
+    if (confirm("Are you sure you want to reset your wallet?")) {
+
+        localStorage.removeItem("balance");
+        localStorage.removeItem("transactions");
+        localStorage.removeItem("totalIncome");
+        localStorage.removeItem("totalSpending");
+
+        totalBalance = 0;
+        totalIncomes = 0;
+        totalSpendings = 0;
+
+        allTransactions = [];
+
+        balance.innerText = "₹0";
+        totalIncome.innerText = "₹0";
+        totalSpending.innerText = "₹0";
+
+        transactions.innerHTML = `
+            <p>No transactions yet.</p>
+        `;
+    }
 }
 function createTransactionCard(item) {
 
