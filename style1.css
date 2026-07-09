@@ -56,6 +56,48 @@
     background:rgba(255,255,255,.04);
     color:white;
 }
+
+.transaction-list h2{
+    margin-bottom: 18px;
+}
+
+.transaction-search{
+    position:relative;
+    display:flex;
+    align-items:center;
+    width:100%;
+    padding:14px 18px;
+    margin-bottom:24px;
+    border-radius:18px;
+    background:rgba(255,255,255,.05);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.1);
+    box-shadow:0 0 20px rgba(201,78,78,.15);
+}
+
+.transaction-search .search-icon{
+    position:absolute;
+    left:18px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#ff9d95;
+    font-size:24px;
+}
+
+.transaction-search input{
+    width:100%;
+    padding-left:44px;
+    border:none;
+    outline:none;
+    background:transparent;
+    color:#fff;
+    font-size:1rem;
+}
+
+.transaction-search input::placeholder{
+    color:rgba(255,255,255,.55);
+}
+
 .AddIncomeBox{
     background: #e80e0e;
     /* color: aliceblue; */
@@ -136,4 +178,31 @@ margin-bottom:20px;
 border-radius:20px
 /* glass effect/background
 hover effect */
+}
+
+.transaction:last-child{
+    margin-bottom:0;
+}
+
+@media (max-width: 900px){
+    .transaction-list{
+        width:min(100%, 700px);
+    }
+
+    .transaction-search{
+        padding:12px 16px;
+    }
+}
+
+@media (max-width: 768px){
+    .transaction-list{
+        width:min(100%, 94vw);
+        padding:20px;
+    }
+
+    .transaction{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+    }
 }

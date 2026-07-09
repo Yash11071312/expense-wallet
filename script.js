@@ -10,6 +10,7 @@ let totalSpending = document.querySelector("#totalSpending");
 balance.innerText = `₹${totalBalance}`;
 totalIncome.innerText = `₹${totalIncomes}`;
 totalSpending.innerText = `₹${totalSpendings}`;
+
 let landing = document.querySelector(".page1");
 let reasonInput = document.querySelector("#reason");
 let main = document.querySelector(".page2");
@@ -19,29 +20,25 @@ let line1 = document.querySelector(".line1");
 let line2 = document.querySelector(".line2");
 let line3 = document.querySelector(".line3");
 let home = document.querySelector("#home");
-let AddIncomeBox = document.querySelector(".AddIncomeBox")
+let AddIncomeBox = document.querySelector(".AddIncomeBox");
 let amountInput = document.querySelector("#AmountIp");
-let transactions =document.querySelector("#transactions")
-let allTransactions =
-    JSON.parse(localStorage.getItem("transactions")) || [];
-let tiger =0;
-let transaction= "None"
-let transactionfirst= 0
-// --------------------------------------------------------------------------
-if (allTransactions.length === 0) {
+let transactions = document.querySelector("#transactions");
+let transactionSearch = document.querySelector("#transactionSearch");
+let allTransactions = JSON.parse(localStorage.getItem("transactions")) || [];
+let tiger = 0;
+let transaction = "None";
+let transactionfirst = 0;
+let transactionSearchTerm = "";
 
-    transactions.innerHTML = "<p>No transactions yet.</p>";
+renderTransactions(allTransactions);
 
-}
-else {
-
-    transactions.innerHTML = "";
-
-    allTransactions.forEach((item) => {
-        transactions.innerHTML += createTransactionCard(item);
+if (transactionSearch) {
+    transactionSearch.addEventListener("input", (event) => {
+        transactionSearchTerm = event.target.value.toLowerCase().trim();
+        renderTransactions(getFilteredTransactions());
     });
-
 }
+
 // HIDE PAGE FUNCTION
 function hideAllPages() {
     landing.classList.add("hidden");
@@ -49,11 +46,10 @@ function hideAllPages() {
     about.classList.add("hidden");
     features.classList.add("hidden");
 }
+
 // NAVIGATE PAGES
 function HomePage() {
-
     hideAllPages();
-
     main.classList.remove("hidden");
 
     RemoveClasslistClicked(document.querySelector("#features"));
@@ -64,14 +60,14 @@ function HomePage() {
     AddClasslistHidden(line3);
     RemoveClasslistHidden(line1);
 }
+
 function landingPage() {
     hideAllPages();
     landing.classList.remove("hidden");
 }
+
 function featuresPage() {
-
     hideAllPages();
-
     features.classList.remove("hidden");
 
     RemoveClasslistClicked(home);
@@ -82,10 +78,9 @@ function featuresPage() {
     AddClasslistHidden(line3);
     RemoveClasslistHidden(line2);
 }
+
 function aboutPage() {
-
     hideAllPages();
-
     about.classList.remove("hidden");
 
     RemoveClasslistClicked(home);
@@ -98,174 +93,148 @@ function aboutPage() {
 }
 
 function AddClasslist(name) {
-  name.classList.add("clicked");
+    name.classList.add("clicked");
 }
+
 function AddClasslistHidden(name) {
-  name.classList.add("hidden");
+    name.classList.add("hidden");
 }
+
 function RemoveClasslistHidden(name) {
-  name.classList.remove("hidden");
+    name.classList.remove("hidden");
 }
+
 function RemoveClasslistClicked(name) {
-  name.classList.remove("clicked");
+    name.classList.remove("clicked");
 }
-// ---------------------------------
 
 // BUTTONS---------------------
-document.getElementById("getsrt").addEventListener("click", (e) => {
-  landing.classList.add("hidden");
-  main.classList.remove("hidden");
+document.getElementById("getsrt").addEventListener("click", () => {
+    landing.classList.add("hidden");
+    main.classList.remove("hidden");
 });
-document.getElementById("getsrt1").addEventListener("click", (e) => {
-  landing.classList.add("hidden");
-  main.classList.remove("hidden");
+
+document.getElementById("getsrt1").addEventListener("click", () => {
+    landing.classList.add("hidden");
+    main.classList.remove("hidden");
 });
 
 document.querySelector("#home").addEventListener("click", (e) => {
-  HomePage();
+    e.preventDefault();
+    HomePage();
 });
+
 document.querySelector("#features").addEventListener("click", (e) => {
-  featuresPage();
+    e.preventDefault();
+    featuresPage();
 });
+
 document.querySelector("#about").addEventListener("click", (e) => {
-  aboutPage();
+    e.preventDefault();
+    aboutPage();
 });
-//  MAIN PAGE  -------------
+
+// MAIN PAGE
 function AddIncome() {
-
-  AddIncomeBox.classList.remove("none")
-tiger=1;
-
+    AddIncomeBox.classList.remove("none");
+    tiger = 1;
     amountInput.value = "";
     reasonInput.value = "";
- amountInput.focus();
+    amountInput.focus();
 }
-function Addbtn(e){
-     e.preventDefault();
+
+function Addbtn(e) {
+    e.preventDefault();
 
     let amount = Number(amountInput.value);
     if (amount <= 0 || isNaN(amount)) {
-    alert("Please enter a valid amount.");
-    return;
-}
-    let reason = reasonInput.value.trim();
-
-  
-
-if (tiger == 1) {
-
-    totalBalance += amount;
-    totalIncomes += amount;
-
-    balance.innerText = `₹${totalBalance}`;
-    totalIncome.innerText = `₹${totalIncomes}`;
-
-    localStorage.setItem("balance", totalBalance);
-    localStorage.setItem("totalIncome", totalIncomes);
-
-    if (reason === "") {
-        reason = "Income";
+        alert("Please enter a valid amount.");
+        return;
     }
 
-    allTransactions.push({
-        type: "income",
-        amount: amount,
-        reason: reason,
-        date: new Date().toLocaleDateString()
-    });
+    let reason = reasonInput.value.trim();
 
-    localStorage.setItem(
-        "transactions",
-        JSON.stringify(allTransactions)
-    );
-
-    transactionsftn("income", amount, reason);
-
-    amountInput.value = "";
-    reasonInput.value = "";
-    AddIncomeBox.classList.add("none");
-}
-else {
-
-    if (amount <= totalBalance) {
-
-        totalBalance -= amount;
-        totalSpendings += amount;
+    if (tiger === 1) {
+        totalBalance += amount;
+        totalIncomes += amount;
 
         balance.innerText = `₹${totalBalance}`;
-        totalSpending.innerText = `₹${totalSpendings}`;
+        totalIncome.innerText = `₹${totalIncomes}`;
 
         localStorage.setItem("balance", totalBalance);
-        localStorage.setItem("totalSpending", totalSpendings);
+        localStorage.setItem("totalIncome", totalIncomes);
 
         if (reason === "") {
-            reason = "Expense";
+            reason = "Income";
         }
 
         allTransactions.push({
-            type: "expense",
+            type: "income",
             amount: amount,
             reason: reason,
             date: new Date().toLocaleDateString()
         });
 
-        localStorage.setItem(
-            "transactions",
-            JSON.stringify(allTransactions)
-        );
-
-        transactionsftn("expense", amount, reason);
+        localStorage.setItem("transactions", JSON.stringify(allTransactions));
+        renderTransactions(getFilteredTransactions());
 
         amountInput.value = "";
         reasonInput.value = "";
-
         AddIncomeBox.classList.add("none");
+    } else {
+        if (amount <= totalBalance) {
+            totalBalance -= amount;
+            totalSpendings += amount;
+
+            balance.innerText = `₹${totalBalance}`;
+            totalSpending.innerText = `₹${totalSpendings}`;
+
+            localStorage.setItem("balance", totalBalance);
+            localStorage.setItem("totalSpending", totalSpendings);
+
+            if (reason === "") {
+                reason = "Expense";
+            }
+
+            allTransactions.push({
+                type: "expense",
+                amount: amount,
+                reason: reason,
+                date: new Date().toLocaleDateString()
+            });
+
+            localStorage.setItem("transactions", JSON.stringify(allTransactions));
+            renderTransactions(getFilteredTransactions());
+
+            amountInput.value = "";
+            reasonInput.value = "";
+            AddIncomeBox.classList.add("none");
+        } else {
+            alert("Expense is greater than your wallet balance.");
+        }
     }
-    else {
-        alert("Expense is greater than your wallet balance.");
-    }
-}}
+}
 
 function CancelBtn() {
     AddIncomeBox.classList.add("none");
     amountInput.value = "";
     reasonInput.value = "";
 }
+
 function Expensededuct() {
-  AddIncomeBox.classList.remove("none")
-  tiger=0;
-
+    AddIncomeBox.classList.remove("none");
+    tiger = 0;
     amountInput.value = "";
-     reasonInput.value = "";
-   amountInput.focus();
+    reasonInput.value = "";
+    amountInput.focus();
 }
 
-function transactionsftn(type, amt,reason) {
-    let today = new Date().toLocaleDateString();
-    if (type === "income") {
-         transactions.innerHTML += createTransactionCard({
-        type: type,
-        amount: amt,
-          reason: reason,
-        date: today
-    });
-
-    }
-    else {
-        transactions.innerHTML += createTransactionCard({
-        type: type,
-    
-        amount: amt,
-          reason: reason,
-        date: today
-    });
-    }
-
+function transactionsftn() {
+    renderTransactions(getFilteredTransactions());
 }
+
 function ResetWallet() {
-
     if (confirm("Are you sure you want to reset your wallet?")) {
-
         localStorage.removeItem("balance");
         localStorage.removeItem("transactions");
         localStorage.removeItem("totalIncome");
@@ -274,29 +243,52 @@ function ResetWallet() {
         totalBalance = 0;
         totalIncomes = 0;
         totalSpendings = 0;
-
         allTransactions = [];
+        transactionSearchTerm = "";
+
+        if (transactionSearch) {
+            transactionSearch.value = "";
+        }
 
         balance.innerText = "₹0";
         totalIncome.innerText = "₹0";
         totalSpending.innerText = "₹0";
 
-        transactions.innerHTML = `
-            <p>No transactions yet.</p>
-        `;
+        renderTransactions(allTransactions);
     }
 }
+
+function getFilteredTransactions() {
+    if (!transactionSearchTerm) {
+        return allTransactions;
+    }
+
+    return allTransactions.filter((item) => {
+        const reason = String(item.reason || "").toLowerCase();
+        const type = String(item.type || "").toLowerCase();
+        return reason.includes(transactionSearchTerm) || type.includes(transactionSearchTerm);
+    });
+}
+
+function renderTransactions(transactionArray) {
+    if (!transactionArray.length) {
+        transactions.innerHTML = transactionSearchTerm
+            ? "<p>No matching transactions found.</p>"
+            : "<p>No transactions yet.</p>";
+        return;
+    }
+
+    transactions.innerHTML = transactionArray.map((item) => createTransactionCard(item)).join("");
+}
+
 function createTransactionCard(item) {
-
-    if(item.type === "income"){
-
+    if (item.type === "income") {
         return `
         <div class="transaction">
             <div>
-           <h4>💰 ${item.reason}</h4>
+                <h4>💰 ${item.reason}</h4>
                 <small>${item.date}</small>
             </div>
-
             <span>+ ₹${item.amount}</span>
         </div>`;
     }
@@ -304,10 +296,9 @@ function createTransactionCard(item) {
     return `
     <div class="transaction">
         <div>
-         <h4>🛒 ${item.reason}</h4>
+            <h4>🛒 ${item.reason}</h4>
             <small>${item.date}</small>
         </div>
-
         <span>- ₹${item.amount}</span>
     </div>`;
 }

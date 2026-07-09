@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="style1.css">
 <link rel="stylesheet"
-href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=account_balance,arrow_circle_right" />
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=account_balance,arrow_circle_right,search" />
 </head>
 <body>
 
@@ -122,6 +122,15 @@ Cancel
 
     <div class="transaction-list">
         <h2>Recent Transactions</h2>
+        <div class="transaction-search">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input
+                type="search"
+                id="transactionSearch"
+                placeholder="Search transactions..."
+                autocomplete="off"
+            >
+        </div>
 
         <div id="transactions">
           <p>
@@ -137,4 +146,4 @@ Cancel
     <section class="features">this is features page</section>
     <script src="script.js"></script>
 </body>
-</html>>
+</html>
