@@ -6,11 +6,6 @@ let totalIncomes = Number(localStorage.getItem("totalIncome")) || 0;
 let balance = document.querySelector("#balance");
 let totalIncome = document.querySelector("#totalIncome");
 let totalSpending = document.querySelector("#totalSpending");
-
-balance.innerText = `₹${totalBalance}`;
-totalIncome.innerText = `₹${totalIncomes}`;
-totalSpending.innerText = `₹${totalSpendings}`;
-
 let landing = document.querySelector(".page1");
 let reasonInput = document.querySelector("#reason");
 let main = document.querySelector(".page2");
@@ -24,13 +19,14 @@ let AddIncomeBox = document.querySelector(".AddIncomeBox");
 let amountInput = document.querySelector("#AmountIp");
 let transactions = document.querySelector("#transactions");
 let transactionSearch = document.querySelector("#transactionSearch");
-let allTransactions = JSON.parse(localStorage.getItem("transactions")) || [];
+let transactionSearchTerm = "";
+let allTransactions = loadTransactions();
 let tiger = 0;
 let transaction = "None";
 let transactionfirst = 0;
-let transactionSearchTerm = "";
 
-renderTransactions(allTransactions);
+updateDashboard();
+renderTransactions(getFilteredTransactions());
 
 if (transactionSearch) {
     transactionSearch.addEventListener("input", (event) => {
@@ -39,7 +35,73 @@ if (transactionSearch) {
     });
 }
 
-// HIDE PAGE FUNCTION
+function loadTransactions() {
+    return (JSON.parse(localStorage.getItem("transactions")) || []).map((item, index) => ({
+        ...item,
+        id: item.id || `${Date.now()}-${index}-${Math.random().toString(16).slice(2)}`
+    }));
+}
+
+function saveTransactions() {
+    localStorage.setItem("transactions", JSON.stringify(allTransactions));
+}
+
+function updateDashboard() {
+    balance.innerText = `₹${totalBalance}`;
+    totalIncome.innerText = `₹${totalIncomes}`;
+    totalSpending.innerText = `₹${totalSpendings}`;
+}
+
+function getFilteredTransactions() {
+    if (!transactionSearchTerm) {
+        return allTransactions;
+    }
+
+    return allTransactions.filter((item) => {
+        const reason = String(item.reason || "").toLowerCase();
+        const type = String(item.type || "").toLowerCase();
+        return reason.includes(transactionSearchTerm) || type.includes(transactionSearchTerm);
+    });
+}
+
+function renderTransactions(transactionArray) {
+    if (!transactionArray.length) {
+        transactions.innerHTML = transactionSearchTerm
+            ? "<p>No matching transactions found.</p>"
+            : "<p>No transactions yet. Start by adding your first transaction.</p>";
+        return;
+    }
+
+    transactions.innerHTML = transactionArray.map((item) => createTransactionCard(item)).join("");
+}
+
+function createTransactionCard(item) {
+    const isIncome = item.type === "income";
+
+    return `
+        <div class="transaction" data-id="${item.id}">
+            <div class="transaction-main">
+                <h4>${isIncome ? "💰" : "🛒"} ${item.reason}</h4>
+                <small>${item.date}</small>
+            </div>
+
+            <div class="transaction-actions">
+                <span class="transaction-amount ${isIncome ? "income" : "expense"}">
+                    ${isIncome ? "+" : "-"} ₹${item.amount}
+                </span>
+                <button
+                    type="button"
+                    class="transaction-delete"
+                    aria-label="Delete transaction"
+                    data-delete-id="${item.id}"
+                    title="Delete transaction"
+                >
+                    <span class="material-symbols-outlined">delete</span>
+                </button>
+            </div>
+        </div>`;
+}
+
 function hideAllPages() {
     landing.classList.add("hidden");
     main.classList.add("hidden");
@@ -47,7 +109,6 @@ function hideAllPages() {
     features.classList.add("hidden");
 }
 
-// NAVIGATE PAGES
 function HomePage() {
     hideAllPages();
     main.classList.remove("hidden");
@@ -134,7 +195,7 @@ document.querySelector("#about").addEventListener("click", (e) => {
     aboutPage();
 });
 
-// MAIN PAGE
+// MAIN PAGE -------------
 function AddIncome() {
     AddIncomeBox.classList.remove("none");
     tiger = 1;
@@ -143,10 +204,25 @@ function AddIncome() {
     amountInput.focus();
 }
 
+function addTransaction(type, amount, reason) {
+    const date = new Date().toLocaleDateString();
+    const transactionItem = {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        type,
+        amount,
+        reason,
+        date
+    };
+
+    allTransactions.push(transactionItem);
+    saveTransactions();
+    renderTransactions(getFilteredTransactions());
+}
+
 function Addbtn(e) {
     e.preventDefault();
 
-    let amount = Number(amountInput.value);
+    const amount = Number(amountInput.value);
     if (amount <= 0 || isNaN(amount)) {
         alert("Please enter a valid amount.");
         return;
@@ -158,67 +234,45 @@ function Addbtn(e) {
         totalBalance += amount;
         totalIncomes += amount;
 
-        balance.innerText = `₹${totalBalance}`;
-        totalIncome.innerText = `₹${totalIncomes}`;
-
-        localStorage.setItem("balance", totalBalance);
-        localStorage.setItem("totalIncome", totalIncomes);
-
         if (reason === "") {
             reason = "Income";
         }
 
-        allTransactions.push({
-            type: "income",
-            amount: amount,
-            reason: reason,
-            date: new Date().toLocaleDateString()
-        });
-
-        localStorage.setItem("transactions", JSON.stringify(allTransactions));
-        renderTransactions(getFilteredTransactions());
-
-        amountInput.value = "";
-        reasonInput.value = "";
-        AddIncomeBox.classList.add("none");
-    } else {
-        if (amount <= totalBalance) {
-            totalBalance -= amount;
-            totalSpendings += amount;
-
-            balance.innerText = `₹${totalBalance}`;
-            totalSpending.innerText = `₹${totalSpendings}`;
-
-            localStorage.setItem("balance", totalBalance);
-            localStorage.setItem("totalSpending", totalSpendings);
-
-            if (reason === "") {
-                reason = "Expense";
-            }
-
-            allTransactions.push({
-                type: "expense",
-                amount: amount,
-                reason: reason,
-                date: new Date().toLocaleDateString()
-            });
-
-            localStorage.setItem("transactions", JSON.stringify(allTransactions));
-            renderTransactions(getFilteredTransactions());
-
-            amountInput.value = "";
-            reasonInput.value = "";
-            AddIncomeBox.classList.add("none");
-        } else {
-            alert("Expense is greater than your wallet balance.");
-        }
+        updateDashboard();
+        localStorage.setItem("balance", totalBalance);
+        localStorage.setItem("totalIncome", totalIncomes);
+        addTransaction("income", amount, reason);
+        closeTransactionForm();
+        return;
     }
+
+    if (amount > totalBalance) {
+        alert("Expense is greater than your wallet balance.");
+        return;
+    }
+
+    totalBalance -= amount;
+    totalSpendings += amount;
+
+    if (reason === "") {
+        reason = "Expense";
+    }
+
+    updateDashboard();
+    localStorage.setItem("balance", totalBalance);
+    localStorage.setItem("totalSpending", totalSpendings);
+    addTransaction("expense", amount, reason);
+    closeTransactionForm();
+}
+
+function closeTransactionForm() {
+    amountInput.value = "";
+    reasonInput.value = "";
+    AddIncomeBox.classList.add("none");
 }
 
 function CancelBtn() {
-    AddIncomeBox.classList.add("none");
-    amountInput.value = "";
-    reasonInput.value = "";
+    closeTransactionForm();
 }
 
 function Expensededuct() {
@@ -229,7 +283,38 @@ function Expensededuct() {
     amountInput.focus();
 }
 
-function transactionsftn() {
+function deleteTransaction(id) {
+    const transactionIndex = allTransactions.findIndex((item) => item.id === id);
+
+    if (transactionIndex === -1) {
+        return;
+    }
+
+    const transactionItem = allTransactions[transactionIndex];
+    const confirmed = confirm("Are you sure you want to delete this transaction?");
+
+    if (!confirmed) {
+        return;
+    }
+
+    if (transactionItem.type === "income") {
+        totalIncomes -= Number(transactionItem.amount) || 0;
+        totalBalance -= Number(transactionItem.amount) || 0;
+    } else {
+        totalSpendings -= Number(transactionItem.amount) || 0;
+        totalBalance += Number(transactionItem.amount) || 0;
+    }
+
+    totalBalance = Math.max(0, totalBalance);
+    totalIncomes = Math.max(0, totalIncomes);
+    totalSpendings = Math.max(0, totalSpendings);
+
+    allTransactions.splice(transactionIndex, 1);
+    localStorage.setItem("balance", totalBalance);
+    localStorage.setItem("totalIncome", totalIncomes);
+    localStorage.setItem("totalSpending", totalSpendings);
+    saveTransactions();
+    updateDashboard();
     renderTransactions(getFilteredTransactions());
 }
 
@@ -250,55 +335,16 @@ function ResetWallet() {
             transactionSearch.value = "";
         }
 
-        balance.innerText = "₹0";
-        totalIncome.innerText = "₹0";
-        totalSpending.innerText = "₹0";
-
+        updateDashboard();
         renderTransactions(allTransactions);
     }
 }
 
-function getFilteredTransactions() {
-    if (!transactionSearchTerm) {
-        return allTransactions;
-    }
-
-    return allTransactions.filter((item) => {
-        const reason = String(item.reason || "").toLowerCase();
-        const type = String(item.type || "").toLowerCase();
-        return reason.includes(transactionSearchTerm) || type.includes(transactionSearchTerm);
-    });
-}
-
-function renderTransactions(transactionArray) {
-    if (!transactionArray.length) {
-        transactions.innerHTML = transactionSearchTerm
-            ? "<p>No matching transactions found.</p>"
-            : "<p>No transactions yet.</p>";
+transactions.addEventListener("click", (event) => {
+    const deleteButton = event.target.closest("[data-delete-id]");
+    if (!deleteButton) {
         return;
     }
 
-    transactions.innerHTML = transactionArray.map((item) => createTransactionCard(item)).join("");
-}
-
-function createTransactionCard(item) {
-    if (item.type === "income") {
-        return `
-        <div class="transaction">
-            <div>
-                <h4>💰 ${item.reason}</h4>
-                <small>${item.date}</small>
-            </div>
-            <span>+ ₹${item.amount}</span>
-        </div>`;
-    }
-
-    return `
-    <div class="transaction">
-        <div>
-            <h4>🛒 ${item.reason}</h4>
-            <small>${item.date}</small>
-        </div>
-        <span>- ₹${item.amount}</span>
-    </div>`;
-}
+    deleteTransaction(deleteButton.dataset.deleteId);
+});

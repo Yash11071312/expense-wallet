@@ -172,16 +172,74 @@ margin-top: 20px;
 .transaction{
     display: flex;
     justify-content:  space-between;
-align-items :center;
-padding:20px;
-margin-bottom:20px;
-border-radius:20px
-/* glass effect/background
-hover effect */
+    align-items :center;
+    gap:16px;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:20px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.06);
+    backdrop-filter:blur(14px);
+    transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;
 }
 
 .transaction:last-child{
     margin-bottom:0;
+}
+
+.transaction:hover{
+    transform:translateY(-3px);
+    border-color:rgba(201,78,78,.35);
+    box-shadow:0 12px 30px rgba(0,0,0,.18);
+}
+
+.transaction-main h4{
+    margin-bottom:6px;
+}
+
+.transaction-actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-shrink:0;
+}
+
+.transaction-amount{
+    font-weight:700;
+    white-space:nowrap;
+}
+
+.transaction-amount.income{
+    color:#9cf5b7;
+}
+
+.transaction-amount.expense{
+    color:#ff9a9a;
+}
+
+.transaction-delete{
+    width:40px;
+    height:40px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:none;
+    border-radius:50%;
+    background:rgba(255,90,90,.12);
+    color:#ff7c7c;
+    cursor:pointer;
+    transition:transform .25s ease, background-color .25s ease, box-shadow .25s ease, color .25s ease;
+}
+
+.transaction-delete .material-symbols-outlined{
+    font-size:22px;
+}
+
+.transaction-delete:hover{
+    transform:scale(1.06);
+    background:rgba(255,90,90,.22);
+    color:#ffb1b1;
+    box-shadow:0 0 18px rgba(255,90,90,.28);
 }
 
 @media (max-width: 900px){
@@ -204,5 +262,10 @@ hover effect */
         flex-direction:column;
         align-items:flex-start;
         gap:10px;
+    }
+
+    .transaction-actions{
+        width:100%;
+        justify-content:space-between;
     }
 }
