@@ -8,6 +8,12 @@ let totalIncome = document.querySelector("#totalIncome");
 let totalSpending = document.querySelector("#totalSpending");
 let landing = document.querySelector(".page1");
 let reasonInput = document.querySelector("#reason");
+let customReasonField = document.querySelector("#customReasonField");
+let categoryPicker = document.querySelector("#categoryPicker");
+let categoryTrigger = document.querySelector("#categoryTrigger");
+let categoryTriggerText = document.querySelector("#categoryTriggerText");
+let categoryMenu = document.querySelector("#categoryMenu");
+let transactionForm = document.querySelector("#transactionForm");
 let main = document.querySelector(".page2");
 let about = document.querySelector(".about");
 let features = document.querySelector(".features");
@@ -22,10 +28,171 @@ let transactionSearch = document.querySelector("#transactionSearch");
 let transactionSearchTerm = "";
 let allTransactions = loadTransactions();
 let tiger = 0;
+let selectedCategory = "";
+let categoryMenuOpen = false;
 let transaction = "None";
 let transactionfirst = 0;
 
+const CATEGORY_OPTIONS = {
+    expense: [
+        { value: "Food", label: "Food", icon: "🍔" },
+        { value: "Shopping", label: "Shopping", icon: "🛍" },
+        { value: "Transport", label: "Transport", icon: "🚗" },
+        { value: "Bills", label: "Bills", icon: "💡" },
+        { value: "Entertainment", label: "Entertainment", icon: "🎮" },
+        { value: "Health", label: "Health", icon: "❤️" },
+        { value: "Education", label: "Education", icon: "📚" },
+        { value: "Other", label: "Other", icon: "📦" }
+    ],
+    income: [
+        { value: "Salary", label: "Salary", icon: "💼" },
+        { value: "Freelance", label: "Freelance", icon: "💻" },
+        { value: "Gift", label: "Gift", icon: "🎁" },
+        { value: "Investment", label: "Investment", icon: "📈" },
+        { value: "Refund", label: "Refund", icon: "💸" },
+        { value: "Other", label: "Other", icon: "📦" }
+    ]
+};
+
+function getTransactionType() {
+    return tiger === 1 ? "income" : "expense";
+}
+
+function getCategoryOptions(type) {
+    return CATEGORY_OPTIONS[type] || CATEGORY_OPTIONS.expense;
+}
+
+function getActiveCategoryOptions() {
+    return getCategoryOptions(getTransactionType());
+}
+
+function getSelectedCategoryOption() {
+    return getActiveCategoryOptions().find((option) => option.value === selectedCategory) || null;
+}
+
+function getCategoryLabel(type, category) {
+    const options = getCategoryOptions(type);
+    const match = options.find((option) => option.value === category);
+    return match ? match.label : "Other";
+}
+
+function getCategoryBadgeClass(type, category) {
+    const normalized = String(category || "Other").toLowerCase();
+    return `category-badge ${type} category-${normalized}`;
+}
+
+function renderCategoryMenu() {
+    if (!categoryMenu) {
+        return;
+    }
+
+    const options = getActiveCategoryOptions();
+    categoryMenu.innerHTML = options.map((option, index) => {
+        const isSelected = option.value === selectedCategory;
+
+        return `
+            <button
+                type="button"
+                class="category-option${isSelected ? " selected" : ""}"
+                role="option"
+                aria-selected="${isSelected}"
+                data-category-value="${option.value}"
+                data-category-index="${index}"
+            >
+                <span class="category-option__icon">${option.icon}</span>
+                <span class="category-option__label">${option.label}</span>
+            </button>
+        `;
+    }).join("");
+}
+
+function syncCategoryTrigger() {
+    if (!categoryTriggerText || !categoryTrigger) {
+        return;
+    }
+
+    const selectedOption = getSelectedCategoryOption();
+
+    if (selectedOption) {
+        categoryTriggerText.innerHTML = `
+            <span class="category-trigger__emoji">${selectedOption.icon}</span>
+            <span>${selectedOption.label}</span>
+        `;
+        categoryTrigger.classList.add("has-value");
+    } else {
+        categoryTriggerText.textContent = "Select category";
+        categoryTrigger.classList.remove("has-value");
+    }
+}
+
+function updateCustomReasonVisibility() {
+    if (!customReasonField) {
+        return;
+    }
+
+    const showCustomReason = selectedCategory === "Other";
+    customReasonField.classList.toggle("visible", showCustomReason);
+
+    if (!showCustomReason && reasonInput) {
+        reasonInput.value = "";
+    }
+}
+
+function closeCategoryMenu() {
+    if (!categoryPicker || !categoryTrigger) {
+        return;
+    }
+
+    categoryPicker.classList.remove("open");
+    categoryTrigger.setAttribute("aria-expanded", "false");
+    categoryMenuOpen = false;
+}
+
+function openCategoryMenu() {
+    if (!categoryPicker || !categoryTrigger || !categoryMenu) {
+        return;
+    }
+
+    renderCategoryMenu();
+    categoryPicker.classList.add("open");
+    categoryTrigger.setAttribute("aria-expanded", "true");
+    categoryMenuOpen = true;
+
+    const selectedButton = categoryMenu.querySelector(".category-option.selected");
+    const firstButton = categoryMenu.querySelector(".category-option");
+    (selectedButton || firstButton)?.focus();
+}
+
+function toggleCategoryMenu() {
+    if (categoryMenuOpen) {
+        closeCategoryMenu();
+        return;
+    }
+
+    openCategoryMenu();
+}
+
+function setSelectedCategory(value, options = {}) {
+    const { closeMenu = true } = options;
+    selectedCategory = value || "";
+    renderCategoryMenu();
+    syncCategoryTrigger();
+    updateCustomReasonVisibility();
+
+    if (selectedCategory !== "Other" && reasonInput) {
+        reasonInput.value = "";
+    }
+
+    if (closeMenu) {
+        closeCategoryMenu();
+        categoryTrigger?.focus();
+    }
+}
+
 updateDashboard();
+renderCategoryMenu();
+syncCategoryTrigger();
+updateCustomReasonVisibility();
 renderTransactions(getFilteredTransactions());
 
 if (transactionSearch) {
@@ -33,6 +200,105 @@ if (transactionSearch) {
         transactionSearchTerm = event.target.value.toLowerCase().trim();
         renderTransactions(getFilteredTransactions());
     });
+}
+
+if (categoryTrigger) {
+    categoryTrigger.addEventListener("click", () => {
+        toggleCategoryMenu();
+    });
+
+    categoryTrigger.addEventListener("keydown", (event) => {
+        const openKeys = ["Enter", " ", "ArrowDown", "ArrowUp"];
+
+        if (!openKeys.includes(event.key)) {
+            return;
+        }
+
+        event.preventDefault();
+
+        if (!categoryMenuOpen) {
+            openCategoryMenu();
+        }
+
+        const buttons = Array.from(categoryMenu?.querySelectorAll(".category-option") || []);
+        if (!buttons.length) {
+            return;
+        }
+
+        if (event.key === "ArrowUp") {
+            buttons[buttons.length - 1].focus();
+        } else {
+            buttons[0].focus();
+        }
+    });
+}
+
+if (categoryMenu) {
+    categoryMenu.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-category-value]");
+        if (!button) {
+            return;
+        }
+
+        setSelectedCategory(button.dataset.categoryValue || "");
+    });
+
+    categoryMenu.addEventListener("keydown", (event) => {
+        const buttons = Array.from(categoryMenu.querySelectorAll(".category-option"));
+        const currentIndex = buttons.indexOf(document.activeElement);
+
+        if (!buttons.length || currentIndex === -1) {
+            return;
+        }
+
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            buttons[(currentIndex + 1) % buttons.length].focus();
+            return;
+        }
+
+        if (event.key === "ArrowUp") {
+            event.preventDefault();
+            buttons[(currentIndex - 1 + buttons.length) % buttons.length].focus();
+            return;
+        }
+
+        if (event.key === "Home") {
+            event.preventDefault();
+            buttons[0].focus();
+            return;
+        }
+
+        if (event.key === "End") {
+            event.preventDefault();
+            buttons[buttons.length - 1].focus();
+            return;
+        }
+
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            buttons[currentIndex].click();
+            return;
+        }
+
+        if (event.key === "Escape") {
+            event.preventDefault();
+            closeCategoryMenu();
+            categoryTrigger?.focus();
+        }
+    });
+}
+
+document.addEventListener("pointerdown", (event) => {
+    if (!categoryPicker || categoryPicker.contains(event.target)) {
+        return;
+    }
+
+    closeCategoryMenu();
+});
+
+if (transactionForm) {
+    transactionForm.addEventListener("submit", Addbtn);
 }
 
 function loadTransactions() {
@@ -60,17 +326,20 @@ function getFilteredTransactions() {
     return allTransactions.filter((item) => {
         const reason = String(item.reason || "").toLowerCase();
         const type = String(item.type || "").toLowerCase();
+        const category = String(item.category || "").toLowerCase();
         const amount = String(item.amount || "");
         const date = String(item.date || "").toLowerCase();
 
         return (
             reason.includes(transactionSearchTerm) ||
             type.includes(transactionSearchTerm) ||
+            category.includes(transactionSearchTerm) ||
             amount.includes(transactionSearchTerm) ||
             date.includes(transactionSearchTerm)
         );
     });
 }
+
 function renderTransactions(transactionArray) {
     if (!transactionArray.length) {
         transactions.innerHTML = transactionSearchTerm
@@ -84,12 +353,14 @@ function renderTransactions(transactionArray) {
 
 function createTransactionCard(item) {
     const isIncome = item.type === "income";
+    const categoryLabel = getCategoryLabel(item.type, item.category);
 
     return `
         <div class="transaction" data-id="${item.id}">
             <div class="transaction-main">
                 <h4>${isIncome ? "💰" : "🛒"} ${item.reason}</h4>
                 <small>${item.date}</small>
+                <span class="${getCategoryBadgeClass(item.type, categoryLabel)}">Category: ${categoryLabel}</span>
             </div>
 
             <div class="transaction-actions">
@@ -205,21 +476,35 @@ document.querySelector("#about").addEventListener("click", (e) => {
 });
 
 // MAIN PAGE -------------
-function AddIncome() {
+function openTransactionForm(type) {
     AddIncomeBox.classList.remove("none");
-    tiger = 1;
+    tiger = type === "income" ? 1 : 0;
     amountInput.value = "";
     reasonInput.value = "";
+    selectedCategory = "";
+    closeCategoryMenu();
+    renderCategoryMenu();
+    syncCategoryTrigger();
+    updateCustomReasonVisibility();
     amountInput.focus();
 }
 
-function addTransaction(type, amount, reason) {
+function AddIncome() {
+    openTransactionForm("income");
+}
+
+function Expensededuct() {
+    openTransactionForm("expense");
+}
+
+function addTransaction(type, amount, reason, category) {
     const date = new Date().toLocaleDateString();
     const transactionItem = {
         id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
         type,
         amount,
         reason,
+        category,
         date
     };
 
@@ -237,20 +522,21 @@ function Addbtn(e) {
         return;
     }
 
-    let reason = reasonInput.value.trim();
+    const category = selectedCategory || "Other";
+    let reason = category === "Other" ? reasonInput.value.trim() : category;
 
     if (tiger === 1) {
         totalBalance += amount;
         totalIncomes += amount;
 
         if (reason === "") {
-            reason = "Income";
+            reason = "Other";
         }
 
         updateDashboard();
         localStorage.setItem("balance", totalBalance);
         localStorage.setItem("totalIncome", totalIncomes);
-        addTransaction("income", amount, reason);
+        addTransaction("income", amount, reason, category);
         closeTransactionForm();
         return;
     }
@@ -264,32 +550,29 @@ function Addbtn(e) {
     totalSpendings += amount;
 
     if (reason === "") {
-        reason = "Expense";
+        reason = "Other";
     }
 
     updateDashboard();
     localStorage.setItem("balance", totalBalance);
     localStorage.setItem("totalSpending", totalSpendings);
-    addTransaction("expense", amount, reason);
+    addTransaction("expense", amount, reason, category);
     closeTransactionForm();
 }
 
 function closeTransactionForm() {
     amountInput.value = "";
     reasonInput.value = "";
+    selectedCategory = "";
+    renderCategoryMenu();
+    syncCategoryTrigger();
+    closeCategoryMenu();
+    updateCustomReasonVisibility();
     AddIncomeBox.classList.add("none");
 }
 
 function CancelBtn() {
     closeTransactionForm();
-}
-
-function Expensededuct() {
-    AddIncomeBox.classList.remove("none");
-    tiger = 0;
-    amountInput.value = "";
-    reasonInput.value = "";
-    amountInput.focus();
 }
 
 function deleteTransaction(id) {

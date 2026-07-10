@@ -71,20 +71,42 @@ arrow_circle_right
 </section>
 
 <div class="AddIncomeBox none">
-        <form >
-        
-        <h1>Enter the amount </h1>
+    <form id="transactionForm">
+        <h1>Add Transaction</h1>
+
+        <label for="AmountIp" class="form-label">Amount</label>
         <input type="number" class="amount" placeholder="Enter the amount" name="amount" id="AmountIp">
-        <input type="text" name="reason" id="reason" placeholder="e.g. Salary, Pocket Money, Freelancing">
-        <div class="Form-buttons">
-            <button type="submit" class="Form-button" onclick="Addbtn(event)">
-Add 
-            </button>
-            <button type="button" class="Form-button" onclick="CancelBtn()">
-Cancel
-            </button>
+
+        <div class="category-field">
+            <label class="form-label" for="categoryTrigger">Category</label>
+            <div class="category-picker" id="categoryPicker">
+                <button
+                    type="button"
+                    class="category-trigger"
+                    id="categoryTrigger"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    aria-controls="categoryMenu"
+                >
+                    <span class="category-trigger__text" id="categoryTriggerText">Select category</span>
+                    <svg class="category-trigger__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </button>
+                <div class="category-menu" id="categoryMenu" role="listbox" aria-label="Transaction categories"></div>
+            </div>
         </div>
-        </form>
+
+        <div class="custom-reason-field" id="customReasonField">
+            <label for="reason" class="form-label">Custom Description</label>
+            <input type="text" name="reason" id="reason" placeholder="Examples: Netflix Subscription, Birthday Gift, Petrol Pump, Laptop Repair, Coffee with Friends">
+        </div>
+
+        <div class="Form-buttons">
+            <button type="submit" class="Form-button">Add Transaction</button>
+            <button type="button" class="Form-button secondary" onclick="CancelBtn()">Cancel</button>
+        </div>
+    </form>
 </div>
 
 <section class="page2 hidden">
