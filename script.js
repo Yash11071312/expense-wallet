@@ -96,7 +96,9 @@ function createTransactionCard(item) {
                     data-delete-id="${item.id}"
                     title="Delete transaction"
                 >
-                    <span class="material-symbols-outlined">delete</span>
+                   <span style="font-size:xx-large;">
+-
+</span>
                 </button>
             </div>
         </div>`;
