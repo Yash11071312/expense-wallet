@@ -60,10 +60,17 @@ function getFilteredTransactions() {
     return allTransactions.filter((item) => {
         const reason = String(item.reason || "").toLowerCase();
         const type = String(item.type || "").toLowerCase();
-        return reason.includes(transactionSearchTerm) || type.includes(transactionSearchTerm);
+        const amount = String(item.amount || "");
+        const date = String(item.date || "").toLowerCase();
+
+        return (
+            reason.includes(transactionSearchTerm) ||
+            type.includes(transactionSearchTerm) ||
+            amount.includes(transactionSearchTerm) ||
+            date.includes(transactionSearchTerm)
+        );
     });
 }
-
 function renderTransactions(transactionArray) {
     if (!transactionArray.length) {
         transactions.innerHTML = transactionSearchTerm
