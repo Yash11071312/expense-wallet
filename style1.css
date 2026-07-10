@@ -156,6 +156,8 @@
     color:#fff;
     max-height:calc(100vh - 32px);
     overflow:auto;
+    scrollbar-color:#2b151b #120f12;
+    scrollbar-width:thin;
 }
 
 .none{
@@ -316,6 +318,32 @@
     overflow:auto;
     z-index:20;
     transition:opacity .2s ease, transform .2s ease, visibility .2s ease;
+    scrollbar-color:#2b151b #120f12;
+    scrollbar-width:thin;
+}
+
+.AddIncomeBox::-webkit-scrollbar,
+.category-menu::-webkit-scrollbar{
+    width:10px;
+    height:10px;
+}
+
+.AddIncomeBox::-webkit-scrollbar-track,
+.category-menu::-webkit-scrollbar-track{
+    background:#120f12;
+    border-radius:999px;
+}
+
+.AddIncomeBox::-webkit-scrollbar-thumb,
+.category-menu::-webkit-scrollbar-thumb{
+    background:linear-gradient(180deg, #33161b, #c94e4e);
+    border-radius:999px;
+    border:2px solid #120f12;
+}
+
+.AddIncomeBox::-webkit-scrollbar-thumb:hover,
+.category-menu::-webkit-scrollbar-thumb:hover{
+    background:linear-gradient(180deg, #432029, #ff6f6f);
 }
 
 .category-picker.open .category-menu{
